@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Chizish Joyi</title>
+<style>
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        min-height:100vh; background:#0d0d0d; font-family:Arial,sans-serif;
+    }
+    h1 {color:#0ff; margin:20px; text-shadow:0 0 10px #0ff,0 0 20px #0ff;}
+    canvas {
+        border:2px solid #0ff; border-radius:10px; background:#111; cursor:crosshair;
+        box-shadow: 0 0 20px #0ff;
+    }
+    .controls {
+        margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    }
+    button, input[type=range] {
+        padding:10px 15px; border:none; border-radius:5px; font-weight:bold; cursor:pointer;
+        background:#0ff; color:#111; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover, input[type=range]:hover { transform:scale(1.1); box-shadow: 0 0 10px #0ff;}
+    input[type=range] { width:150px;}
+</style>
+</head>
+<body>
+<h1>Neon Chizish Joyi</h1>
+<canvas id="canvas" width="900" height="500"></canvas>
+<div class="controls">
+    <label>Brush O'lchami: <input type="range" id="brushSize" min="1" max="50" value="5"></label>
+    <button id="eraserBtn">Eraser</button>
+    <button id="clearBtn">Tozalash</button>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let drawing=false;
+let brushSize=5;
+let erasing=false;
+let hue=0; // neon rang uchun
+
+const brushRange = document.getElementById('brushSize');
+const eraserBtn = document.getElementById('eraserBtn');
+const clearBtn = document.getElementById('clearBtn');
+
+canvas.addEventListener('mousedown', ()=>drawing=true);
+canvas.addEventListener('mouseup', ()=>drawing=false);
+canvas.addEventListener('mouseleave', ()=>drawing=false);
+canvas.addEventListener('mousemove', draw);
+
+function draw(e){
+    if(!drawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if(erasing){
+        ctx.fillStyle='#111';
+        ctx.shadowColor = '#111';
+    } else {
+        ctx.fillStyle = `hsl(${hue},100%,50%)`;
+        ctx.shadowColor = `hsl(${hue},100%,50%)`;
+        ctx.shadowBlur = 20;
+        hue = (hue + 1) % 360; // ranglar gradienti
+    }
+
+    ctx.beginPath();
+    ctx.arc(x,y,brushSize,0,Math.PI*2);
+    ctx.fill();
+}
+
+brushRange.addEventListener('input', e => brushSize=e.target.value);
+eraserBtn.addEventListener('click', ()=> erasing=true);
+clearBtn.addEventListener('click', ()=> ctx.clearRect(0,0,canvas.width,canvas.height));
+
+// Rangli brushga qaytish uchun sichqonchani bosish
+canvas.addEventListener('mousedown', ()=>{if(erasing) erasing=false;});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
